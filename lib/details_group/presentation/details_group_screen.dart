@@ -46,10 +46,7 @@ class _DetailsGroupScreenState extends State<DetailsGroupScreen> {
   void uploadFile() async {
     var picked;
     try {
-      picked = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['txt'],
-      );
+      picked = await FilePicker.platform.pickFiles(type: FileType.any);
     } catch (e) {
       print(e);
     }
@@ -59,7 +56,10 @@ class _DetailsGroupScreenState extends State<DetailsGroupScreen> {
         Uint8List uploadfile = picked.files.single.bytes;
         String filename = basename(picked.files.single.name);
         detailsGroupCubit.addFile(
-            groupId: widget.id, file: uploadfile, filename: filename);
+          groupId: widget.id,
+          file: uploadfile,
+          filename: filename,
+        );
       } catch (e) {
         print(e);
       }
@@ -149,9 +149,7 @@ class _DetailsGroupScreenState extends State<DetailsGroupScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            ConditionalBuilder(
-                              condition: state is! OpenFileLoadingState,
-                              builder: (context) => Padding(
+                               Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: defaultbutton(
                                     backround: (selectedFileIds.length > 0)
@@ -166,11 +164,8 @@ class _DetailsGroupScreenState extends State<DetailsGroupScreen> {
                                       detailsGroupCubit.openFiles(
                                           selectedFileIds, selectedFileName);
                                     }),
-                              ),
-                              fallback: (context) => Center(
-                                child: CircularProgressIndicator(),
-                              ),
-                            ),
+                              )
+
                           ],
                         ),
                         Expanded(

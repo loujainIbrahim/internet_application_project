@@ -33,8 +33,15 @@ class DetailsGroupCubit extends Cubit<DetailsGroupState> {
   Future<void> addFile(
       {required int groupId,
       required Uint8List file,
-      required String filename}) async {
+      required String filename,int maxSizeInMB = 10}) async {
+    double fileSizeInMB = file.lengthInBytes / (1024 * 1024);
+    if (fileSizeInMB > maxSizeInMB) {
+      // File size exceeds the allowed limit
+      emit(AddFileToGroupErrorState('File size exceeds the maximum limit of $maxSizeInMB MB'));
+      return;
+    }
     emit(AddFileToGroupLoadingState());
+
     try {
       // Create a FormData object to send the file
       FormData formData = FormData.fromMap({
