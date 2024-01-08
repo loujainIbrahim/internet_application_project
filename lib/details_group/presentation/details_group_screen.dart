@@ -31,6 +31,8 @@ class DetailsGroupScreen extends StatefulWidget {
 
 class _DetailsGroupScreenState extends State<DetailsGroupScreen> {
   late DetailsGroupCubit detailsGroupCubit;
+  final TextEditingController _MaxSizeFilesController = TextEditingController();
+  double defaultMaxSize = 6144;
   DetailsGroup? detailsGroup;
   List<int> selectedFileIds = [];
   List<String> selectedFileName = [];
@@ -39,6 +41,7 @@ class _DetailsGroupScreenState extends State<DetailsGroupScreen> {
   void initState() {
     super.initState();
     detailsGroupCubit = DetailsGroupCubit();
+    _MaxSizeFilesController.text = defaultMaxSize.toString();
     print(widget.id);
     detailsGroupCubit.getFilesOfGroup(widget.id);
   }
@@ -118,14 +121,67 @@ class _DetailsGroupScreenState extends State<DetailsGroupScreen> {
             detailsGroup = detailsGroupCubit.detailsGroup;
             ErrorSnackBar.show(context, "delete file successfully");
           }
+          if (state is EditSizeFilesSuccessState) {
+            ErrorSnackBar.show(context, state.message);
+          }
         }, builder: (context, state) {
           return Scaffold(
-            floatingActionButton: FloatingActionButton(
-              onPressed: () {
-                print(selectedFileIds);
-                uploadFile();
-              },
-              child: Icon(Icons.add),
+            floatingActionButton: Padding(
+              padding: const EdgeInsets.only(bottom: 30.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  FloatingActionButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text('Max size files'),
+                            content: TextField(
+                              controller: _MaxSizeFilesController,
+                              decoration: InputDecoration(
+                                  labelText: 'Enter Max Size Files'),
+                            ),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop(); // Close dialog
+                                },
+                                child: Text('Cancel'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  // Save group name logic here (you can customize)
+                                  String maxSize = _MaxSizeFilesController.text;
+                                  // print('Group Name: $groupName');
+                                  double ss = double.parse(maxSize);
+                                  defaultMaxSize = ss;
+                                  detailsGroupCubit.EditSizeFile(
+                                      max_size: ss, group_id: widget.id);
+                                  Navigator.pop(context);
+                                },
+                                child: Text('Save'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                    child: Icon(Icons.file_open),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  FloatingActionButton(
+                    onPressed: () {
+                      print(selectedFileIds);
+                      uploadFile();
+                    },
+                    child: Icon(Icons.add),
+                  ),
+                ],
+              ),
             ),
             appBar: AppBar(
               backgroundColor: Colors.grey[200],
@@ -149,23 +205,27 @@ class _DetailsGroupScreenState extends State<DetailsGroupScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                               Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: defaultbutton(
-                                    backround: (selectedFileIds.length > 0)
-                                        ? Colors.deepOrange
-                                        : Colors.deepOrange[200]!,
-                                    width: 170,
-                                    text: "Edit files",
-                                    textColor: (selectedFileIds.length > 0)
-                                        ? Colors.black
-                                        : Colors.black12!,
-                                    function: () {
-                                      detailsGroupCubit.openFiles(
-                                          selectedFileIds, selectedFileName);
-                                    }),
-                              )
-
+                            Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: defaultbutton(
+                                      backround: (selectedFileIds.length > 0)
+                                          ? Colors.deepOrange
+                                          : Colors.deepOrange[200]!,
+                                      width: 170,
+                                      text: "Edit files",
+                                      textColor: (selectedFileIds.length > 0)
+                                          ? Colors.black
+                                          : Colors.black12!,
+                                      function: () {
+                                        detailsGroupCubit.openFiles(
+                                            selectedFileIds, selectedFileName);
+                                        selectedFileIds = [];
+                                      }),
+                                ),
+                              ],
+                            )
                           ],
                         ),
                         Expanded(
@@ -344,6 +404,7 @@ class _DetailsGroupScreenState extends State<DetailsGroupScreen> {
                                                                       MaterialPageRoute(
                                                                           builder: (context) => MonitoringFilesScreen(
                                                                                 file_id: fileDetails.id!,
+                                                                                group_id: fileDetails.groupId!,
                                                                               )));
                                                                   // _updateFile(fileDetails);
                                                                 },

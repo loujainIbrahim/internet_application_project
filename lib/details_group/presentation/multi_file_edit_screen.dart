@@ -29,7 +29,8 @@ class MultiFileEditScreen extends StatefulWidget {
   final List<MyData> fileContents;
   final List<String> selectedFileName;
 
-  MultiFileEditScreen({required this.fileContents, required this.selectedFileName});
+  MultiFileEditScreen(
+      {required this.fileContents, required this.selectedFileName});
 
   @override
   State<MultiFileEditScreen> createState() => _MultiFileEditScreenState();
@@ -44,11 +45,13 @@ class _MultiFileEditScreenState extends State<MultiFileEditScreen> {
         .map((content) => TextEditingController(text: content.data))
         .toList();
   }
+
   @override
   void dispose() {
     controllers.forEach((controller) => controller.dispose());
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,29 +62,27 @@ class _MultiFileEditScreenState extends State<MultiFileEditScreen> {
         create: (context) => DetailsGroupCubit(),
         child: BlocConsumer<DetailsGroupCubit, DetailsGroupState>(
           listener: (context, state) {
-            if(state is EditFileSuccessState)
-              {
-                ErrorSnackBar.show(context, "Update successfully");
-
-              }
+            if (state is EditFileSuccessState) {
+              ErrorSnackBar.show(context, "Update successfully");
+            }
             // TODO: implement listener
           },
           builder: (context, state) {
             return SplitView(
               children: widget.fileContents.asMap().entries.map((entry) {
                 int index = entry.key;
-                TextEditingController controller=TextEditingController();
-                controller.text= entry.value.data;
+                TextEditingController controller =
+                    controllers[index]; // Use pre-created controller
                 String fileName = widget.selectedFileName.elementAt(index);
 
                 return Column(
                   children: [
                     Expanded(
                       child: Container(
-                       // height:200,
+                        // height:200,
                         padding: EdgeInsets.all(8.0),
                         child: TextField(
-                          controller:controller,
+                          controller: controller,
                           maxLines: null,
                           expands: true,
                           style: TextStyle(fontSize: 16),
@@ -93,33 +94,28 @@ class _MultiFileEditScreenState extends State<MultiFileEditScreen> {
                       ),
                     ),
                     SizedBox(height: 20.0),
-                    ConditionalBuilder(
-                      condition: state is! EditFileLoadingState,
-                      builder: (context) => Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: defaultbutton(
-                          backround: Colors.deepOrange,
-                          width: 200,
-                          text: 'Save changes',
-                          function: () async {
-                            String updatedData = controller.text;
-                            Uint8List fileContent = Uint8List.fromList(utf8.encode(updatedData));
-                            print("this is id for update");
-                            print( widget.fileContents[index].id);
-                            // Call the function to create and send the file to the backend
-                            DetailsGroupCubit.get(context).createAndSendFileToBackend(
-                              fileContent,
-                              widget.fileContents[index].id,
-                              fileName,
-                            );
-
-                          },
-                        ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: defaultbutton(
+                        backround: Colors.deepOrange,
+                        width: 200,
+                        text: 'Save changes',
+                        function: () async {
+                          String updatedData = controller.text;
+                          Uint8List fileContent =
+                              Uint8List.fromList(utf8.encode(updatedData));
+                          print("this is id for update");
+                          print(widget.fileContents[index].id);
+                          // Call the function to create and send the file to the backend
+                          DetailsGroupCubit()
+                              .createAndSendFileToBackend(
+                            fileContent,
+                            widget.fileContents[index].id,
+                            fileName,
+                          );
+                        },
                       ),
-                      fallback: (context) => Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    ),
+                    )
                   ],
                 );
               }).toList(),
@@ -133,4 +129,3 @@ class _MultiFileEditScreenState extends State<MultiFileEditScreen> {
     );
   }
 }
-

@@ -67,3 +67,13 @@ class DeleteFilesErrorState extends DetailsGroupState {
   final String error;
   DeleteFilesErrorState(this.error);
 }
+
+class EditSizeFilesLoadingState extends DetailsGroupState {}
+class EditSizeFilesSuccessState extends DetailsGroupState {
+  final String message;
+  EditSizeFilesSuccessState(this.message);
+}
+class EditSizeFilesErrorState extends DetailsGroupState {
+  final String error;
+  EditSizeFilesErrorState(this.error);
+}

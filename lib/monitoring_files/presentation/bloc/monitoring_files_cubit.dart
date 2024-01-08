@@ -8,10 +8,10 @@ part 'monitoring_files_state.dart';
 class MonitoringFilesCubit extends Cubit<MonitoringFilesState> {
   MonitoringFilesCubit() : super(MonitoringFilesInitial());
   late MonitoringModel monitoringModel;
-  Future<void> getMonitoringFiles(int file_id) async {
+  Future<void> getMonitoringFiles(int file_id,int group_id) async {
     emit(MonitoringFilesLoadingState());
     try {
-      final response = await DioHelper.getData(url: "group/modefies/file/$file_id");
+      final response = await DioHelper.getData(url: "group/modefies/file/$file_id/$group_id");
       monitoringModel = MonitoringModel.fromJsonList(response.data);
       print(response.data);
       emit(MonitoringFilesSuccessState());

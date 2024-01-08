@@ -60,41 +60,47 @@ class _HomeState extends State<Home> {
         },
         builder: (context, state) {
           return Scaffold(
-            floatingActionButton: FloatingActionButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: Text('Group Name'),
-                      content: TextField(
-                        controller: _groupNameController,
-                        decoration:
-                            InputDecoration(labelText: 'Enter Group Name'),
-                      ),
-                      actions: <Widget>[
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop(); // Close dialog
-                          },
-                          child: Text('Cancel'),
+            floatingActionButton: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: FloatingActionButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: Text('Group Name'),
+                        content: TextField(
+                          controller: _groupNameController,
+                          decoration:
+                          InputDecoration(labelText: 'Enter Group Name'),
                         ),
-                        TextButton(
-                          onPressed: () {
-                            // Save group name logic here (you can customize)
-                            String groupName = _groupNameController.text;
-                            print('Group Name: $groupName');
-                            myGroupsCubit.createGroup(name: groupName);
-                            Navigator.pop(context);
-                          },
-                          child: Text('Save'),
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
-              child: Icon(Icons.add),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop(); // Close dialog
+                            },
+                            child: Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              // Save group name logic here (you can customize)
+                              String groupName = _groupNameController.text;
+                              print('Group Name: $groupName');
+                              myGroupsCubit.createGroup(name: groupName);
+                              Navigator.pop(context);
+                            },
+                            child: Text('Save'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+                child: Icon(Icons.add),
+              ),
+                  ),
             ),
             appBar: AppBar(
               backgroundColor: Colors.grey[200],

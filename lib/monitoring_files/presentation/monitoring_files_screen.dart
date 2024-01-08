@@ -6,14 +6,14 @@ import 'package:internet_application/monitoring_group/presentation/bloc/monitori
 
 class MonitoringFilesScreen extends StatelessWidget {
   final int file_id;
-
-  const MonitoringFilesScreen({Key? key, required this.file_id})
+final int group_id;
+  const MonitoringFilesScreen({Key? key, required this.file_id,required this.group_id})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => MonitoringFilesCubit()..getMonitoringFiles(file_id),
+      create: (context) => MonitoringFilesCubit()..getMonitoringFiles(file_id,group_id),
       child: BlocConsumer<MonitoringFilesCubit, MonitoringFilesState>(
         builder: (BuildContext context, state) {
           if (state is MonitoringFilesLoadingState) {

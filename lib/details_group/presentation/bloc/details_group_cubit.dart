@@ -194,4 +194,31 @@ class DetailsGroupCubit extends Cubit<DetailsGroupState> {
       print(onError.toString());
     });
   }
+
+
+  Future<void> EditSizeFile(
+      {required double max_size,
+        required int group_id
+      }) async {
+    emit(EditSizeFilesLoadingState());
+    try {
+      // Create a FormData object to send the file
+
+
+      final response = await DioHelper.postData(
+        url: "group/edit-max-size/$group_id", data: {
+        'maxSize':max_size
+      },
+      );
+
+      if (response != null) {
+        emit(EditSizeFilesSuccessState(response.data["message"]));
+        print(response.data);
+      } else {
+        emit(EditSizeFilesErrorState('Unexpected null value in response'));
+      }
+    } catch (onError) {
+      emit(EditSizeFilesErrorState(onError.toString()));
+    }
+  }
 }
